@@ -13,8 +13,10 @@ class Slingshot : GameObject
 	private float fireMultiplier = 20f;
 	private Vector2 currentImpulse;
 	private Vector2 previousImpulse;
+	private Vector2 previousBirdFirePosition;
 
-	public Bird bird;
+	public Bird Bird;
+	public bool Active;
 
 	public Slingshot(Vector2 position)
 	{
@@ -27,12 +29,12 @@ class Slingshot : GameObject
 	public override void PreSceneInit()
 	{
 		// Get the bird we're working with
-		bird = Level.GameObjects.OfType<Bird>().FirstOrDefault();
-		bird.InSlingshot = true;
+		Bird = Level.GameObjects.OfType<Bird>().FirstOrDefault();
+		Bird.InSlingshot = true;
 
 		// Have its physics off until we shoot it
 		//! I don't think this actually turns it off properly
-		bird.SimulatePhysics = false;
+		Bird.SimulatePhysics = false;
 	}
 
 	private Vector2 CalculatePotentialImpulse()
@@ -59,23 +61,27 @@ class Slingshot : GameObject
 		{
 			// Place the bird in the slingshot
 			Vector2 birdOffset = new Vector2(0.1f, 0.8f);
-			bird.TeleportTo(Level.MousePosition - (bird.Size * birdOffset), false);
+			Bird.TeleportTo(Level.MousePosition - (Bird.Size * birdOffset), false);
 
 			// Set the slingshot rotation to make the bird rotate towards the top of the slingshot
-			Vector2 direction = Position - bird.Position;
-			bird.SlingshotRotation = MathF.Atan2(direction.Y, direction.X) * Raylib.RAD2DEG;
+			Vector2 direction = Position - Bird.Position;
+			Bird.SlingshotRotation = MathF.Atan2(direction.Y, direction.X) * Raylib.RAD2DEG;
 		}
 
 		// Check for if we've released the bird
 		if (previouslyPullingBackwards && PullingBackwards == false)
 		{
 			// Get rid of external forces
-			bird.PhysicsBody.SetLinearVelocity(Vector2.Zero);
-			bird.PhysicsBody.SetAngularVelocity(0f);
+			Bird.PhysicsBody.SetLinearVelocity(Vector2.Zero);
+			Bird.PhysicsBody.SetAngularVelocity(0f);
 
 			// Store our impulse
 			currentImpulse = CalculatePotentialImpulse();
-			bird.PhysicsBody.ApplyLinearImpulseToCenter(currentImpulse, true);
+			Bird.PhysicsBody.ApplyLinearImpulseToCenter(currentImpulse, true);
+
+			// Store our fire conditions
+			previousImpulse = currentImpulse;
+			previousBirdFirePosition = Bird.CenteredPosition;
 		}
 
 		previouslyPullingBackwards = PullingBackwards;
@@ -83,9 +89,21 @@ class Slingshot : GameObject
 
 	public override void Draw()
 	{
-		if (PullingBackwards) DrawPredictedTrajectory();
+		// Draw our old previous path
+		DrawPredictedTrajectory(previousBirdFirePosition, previousImpulse, 5, Color.LightGray);
 
-		bird.Draw();
+		// Draw our live 'new' prediction
+		if (PullingBackwards)
+		{
+			DrawPredictedTrajectory(
+				Bird.CenteredPosition,
+				CalculatePotentialImpulse(),
+				3,
+				Color.White
+			);
+		}
+
+		Bird.Draw();
 
 		if (PullingBackwards)
 		{
@@ -112,16 +130,18 @@ class Slingshot : GameObject
 		}
 	}
 
-	public void DrawPredictedTrajectory()
+	public void DrawPredictedTrajectory(Vector2 position, Vector2 impulse, int framesPerDot, Color color)
 	{
+		// Ensure we've got something to do
+		if (impulse == Vector2.Zero) return;
+
 		// TODO: Maybe use the current fps of the game 
 		// TODO: Move these up the top
 		const float deltaTime = 1 / 60f;
 		const float secondsToSimulate = 5f;
-		const float framesPerDot = 3f;
 
-		Vector2 velocity = CalculatePotentialImpulse() / bird.PhysicsBody.Mass;
-		Vector2 simulatedPosition = bird.PositionCenter;
+		Vector2 velocity = impulse / Bird.PhysicsBody.Mass;
+		Vector2 simulatedPosition = position;
 
 		const int framesToSimulate = (int)(secondsToSimulate / deltaTime);
 		for (int i = 0; i < framesToSimulate; i++)
@@ -129,7 +149,7 @@ class Slingshot : GameObject
 			// Check for if we're due to draw a dot
 			if (i % framesPerDot == 0)
 			{
-				Raylib.DrawCircleV(simulatedPosition, 0.15f, Color.White);
+				Raylib.DrawCircleV(simulatedPosition, 0.15f, color);
 			}
 
 			// Run the simulation
