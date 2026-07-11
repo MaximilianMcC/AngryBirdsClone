@@ -20,7 +20,7 @@ class Slingshot : GameObject
 	{
 		Position = position;
 
-		Size = new Vector2(2f, 7f);
+		Size = new Vector2(2f, 7f) * 0.8f;
 		MainTexture = Raylib.LoadTexture("./assets/slingshot.png");
 	}
 
@@ -51,7 +51,7 @@ class Slingshot : GameObject
 	public override void Update()
 	{
 		PullingBackwards = Raylib.IsMouseButtonDown(MouseButton.Left);
-		if (previouslyPullingBackwards == false && PullingBackwards) Console.WriteLine("Begin pull");
+		// if (previouslyPullingBackwards == false && PullingBackwards) Console.WriteLine("Begin pull");
 
 		// If we've got the bird in our slingshot
 		// then make it follow the cursor
@@ -83,6 +83,8 @@ class Slingshot : GameObject
 
 	public override void Draw()
 	{
+		if (PullingBackwards) DrawPredictedTrajectory();
+
 		bird.Draw();
 
 		if (PullingBackwards)
@@ -107,18 +109,33 @@ class Slingshot : GameObject
 				bandThickness,
 				frontBandColor
 			);
-
-			CalculateAndDrawTargetPosition();
 		}
 	}
 
-	public void CalculateAndDrawTargetPosition()
+	public void DrawPredictedTrajectory()
 	{
-		Vector2 impulse = CalculatePotentialImpulse();
+		// TODO: Maybe use the current fps of the game 
+		// TODO: Move these up the top
+		const float deltaTime = 1 / 60f;
+		const float secondsToSimulate = 5f;
+		const float framesPerDot = 3f;
 
-		float angle = MathF.Atan2(impulse.Y, impulse.X) * Raylib.RAD2DEG;
-		float range = impulse.Length() * (MathF.Sin(2 * angle) / Level.Gravity);
+		Vector2 velocity = CalculatePotentialImpulse() / bird.PhysicsBody.Mass;
+		Vector2 simulatedPosition = bird.PositionCenter;
 
-		Raylib.DrawCircleV(Position + new Vector2(range, 0), 0.3f, Color.White);
+		const int framesToSimulate = (int)(secondsToSimulate / deltaTime);
+		for (int i = 0; i < framesToSimulate; i++)
+		{
+			// Check for if we're due to draw a dot
+			if (i % framesPerDot == 0)
+			{
+				Raylib.DrawCircleV(simulatedPosition, 0.15f, Color.White);
+			}
+
+			// Run the simulation
+			// TODO: Maybe stop the simulation if there is collision
+			velocity += new Vector2(0, Level.Gravity) * deltaTime;
+			simulatedPosition += velocity * deltaTime;
+		}
 	}
 }

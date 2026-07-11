@@ -8,7 +8,7 @@ class Level1 : LevelPrototype
 	{
 		Spawn(new Ground());
 
-		Spawn(new Slingshot(new Vector2(10, -7)));
+		Spawn(new Slingshot(new Vector2(10, -5.5f)));
 
 		Spawn(new WoodenPole(new Vector2(30, -5f), 0f));
 		Spawn(new WoodenPole(new Vector2(33, -5f), 0f));

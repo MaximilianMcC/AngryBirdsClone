@@ -6,6 +6,7 @@ class Program
 	{
 		Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
 		Raylib.InitWindow(800, 500, "That sure is one angry bird");
+		Raylib.SetExitKey(KeyboardKey.Null);
 
 		Level.Init(new Level1());
 

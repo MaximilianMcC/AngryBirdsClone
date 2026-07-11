@@ -7,6 +7,8 @@ abstract class GameObject
 	public float Rotation;
 	public Vector2 Size = new Vector2(10);
 
+	public Vector2 PositionCenter => Position + (Size / 2f);
+
 	protected Texture2D MainTexture;
 
 	public virtual void PreSceneInit() { }
@@ -19,7 +21,7 @@ abstract class GameObject
 		Raylib.DrawTexturePro(
 			MainTexture,
 			new Rectangle(0, 0, MainTexture.Dimensions),
-			new Rectangle(Position + (Size / 2f), Size),
+			new Rectangle(PositionCenter, Size),
 			Size / 2,
 			Rotation,
 			Color.White
