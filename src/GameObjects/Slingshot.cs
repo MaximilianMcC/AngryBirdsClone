@@ -16,7 +16,7 @@ class Slingshot : GameObject
 	private Vector2 currentImpulse;
 	private Vector2 previousImpulse;
 	private Vector2 previousBirdFirePosition;
-
+	private float previousBirdMass;
 
 	public Bird Bird;
 
@@ -24,7 +24,7 @@ class Slingshot : GameObject
 	{
 		Position = position;
 
-		Size = new Vector2(2f, 7f) * 0.8f;
+		Size = new Vector2(2f, 7f) * 0.9f;
 		MainTexture = Raylib.LoadTexture("./assets/slingshot.png");
 	}
 
@@ -52,6 +52,9 @@ class Slingshot : GameObject
 
 	public override void Update()
 	{
+		// Check for if we even have a bird selected
+		if (Bird == null) return;
+
 		PullingBackwards = Raylib.IsMouseButtonDown(MouseButton.Left);
 		// if (previouslyPullingBackwards == false && PullingBackwards) Console.WriteLine("Begin pull");
 
@@ -95,6 +98,14 @@ class Slingshot : GameObject
 			// Store our fire conditions
 			previousImpulse = currentImpulse;
 			previousBirdFirePosition = Bird.CenteredPosition;
+			previousBirdMass = Bird.PhysicsBody.Mass;
+
+			// Unselect the bird
+			Bird.InSlingshot = false;
+			Bird = null;
+
+			// Unselect the slingshot
+			PullingBackwards = false;
 		}
 
 		previouslyPullingBackwards = PullingBackwards;
@@ -103,7 +114,7 @@ class Slingshot : GameObject
 	public override void Draw()
 	{
 		// Draw our old previous path
-		DrawPredictedTrajectory(previousBirdFirePosition, previousImpulse, 5, Color.LightGray);
+		DrawPredictedTrajectory(previousBirdFirePosition, previousImpulse, previousBirdMass, 5, Color.LightGray);
 
 		// Draw our live 'new' prediction
 		if (PullingBackwards)
@@ -111,12 +122,13 @@ class Slingshot : GameObject
 			DrawPredictedTrajectory(
 				Bird.CenteredPosition,
 				CalculatePotentialImpulse(),
+				Bird.PhysicsBody.Mass,
 				3,
 				Color.White
 			);
 		}
 
-		Bird.Draw();
+		Bird?.Draw();
 
 		if (PullingBackwards)
 		{
@@ -143,7 +155,7 @@ class Slingshot : GameObject
 		}
 	}
 
-	public void DrawPredictedTrajectory(Vector2 position, Vector2 impulse, int framesPerDot, Color color)
+	public void DrawPredictedTrajectory(Vector2 position, Vector2 impulse, float mass, int framesPerDot, Color color)
 	{
 		// Ensure we've got something to do
 		if (impulse == Vector2.Zero) return;
@@ -153,7 +165,7 @@ class Slingshot : GameObject
 		const float deltaTime = 1 / 60f;
 		const float secondsToSimulate = 5f;
 
-		Vector2 velocity = impulse / Bird.PhysicsBody.Mass;
+		Vector2 velocity = impulse / mass;
 		Vector2 simulatedPosition = position;
 
 		const int framesToSimulate = (int)(secondsToSimulate / deltaTime);
