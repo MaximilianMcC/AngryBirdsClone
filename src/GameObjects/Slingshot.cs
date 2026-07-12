@@ -18,6 +18,9 @@ class Slingshot : GameObject
 	private Vector2 previousBirdFirePosition;
 	private float previousBirdMass;
 
+	private const float SimulationDeltaTime = 1 / 60f;
+	private const float SimulationSecondsToSimulate = 5f;
+
 	public Bird Bird;
 
 	public Slingshot(Vector2 position)
@@ -30,8 +33,23 @@ class Slingshot : GameObject
 
 	public override void PreSceneInit()
 	{
+		// Get our first bird
+		GetNextBird();
+	}
+
+	public void GetNextBird()
+	{
 		// Get the bird we're working with
-		Bird = Level.GameObjects.OfType<Bird>().FirstOrDefault();
+		Bird = Level.GameObjects.OfType<Bird>()
+			.Where(bird => bird.HasAlreadyBeenFired == false)
+			.FirstOrDefault();
+
+		if (Bird is null)
+		{
+			Console.WriteLine("no more birds left");
+			return;
+		}
+		
 		Bird.InSlingshot = true;
 
 		// Have its physics off until we shoot it
@@ -100,12 +118,18 @@ class Slingshot : GameObject
 			previousBirdFirePosition = Bird.CenteredPosition;
 			previousBirdMass = Bird.PhysicsBody.Mass;
 
+			// Say we've been shot
+			Bird.HasAlreadyBeenFired = true;
+
 			// Unselect the bird
 			Bird.InSlingshot = false;
 			Bird = null;
 
 			// Unselect the slingshot
 			PullingBackwards = false;
+
+			// Select the next bird
+			GetNextBird();
 		}
 
 		previouslyPullingBackwards = PullingBackwards;
@@ -160,15 +184,10 @@ class Slingshot : GameObject
 		// Ensure we've got something to do
 		if (impulse == Vector2.Zero) return;
 
-		// TODO: Maybe use the current fps of the game 
-		// TODO: Move these up the top
-		const float deltaTime = 1 / 60f;
-		const float secondsToSimulate = 5f;
-
 		Vector2 velocity = impulse / mass;
 		Vector2 simulatedPosition = position;
 
-		const int framesToSimulate = (int)(secondsToSimulate / deltaTime);
+		const int framesToSimulate = (int)(SimulationSecondsToSimulate / SimulationDeltaTime);
 		for (int i = 0; i < framesToSimulate; i++)
 		{
 			// Check for if we're due to draw a dot
@@ -179,8 +198,8 @@ class Slingshot : GameObject
 
 			// Run the simulation
 			// TODO: Maybe stop the simulation if there is collision
-			velocity += new Vector2(0, Level.Gravity) * deltaTime;
-			simulatedPosition += velocity * deltaTime;
+			velocity += new Vector2(0, Level.Gravity) * SimulationDeltaTime;
+			simulatedPosition += velocity * SimulationDeltaTime;
 		}
 	}
 }
