@@ -64,7 +64,7 @@ class Slingshot : GameObject
 		Vector2 direction = Vector2.Normalize(CradleCenter - Bird.Position);
 		float firePower = Vector2.Distance(Bird.Position, CradleCenter) * fireMultiplier;
 
-		Vector2 impulse = direction * firePower;
+		Vector2 impulse = direction * (firePower * Bird.SpeedModifier);
 		return impulse;
 	}
 

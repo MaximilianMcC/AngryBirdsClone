@@ -9,6 +9,8 @@ abstract class Bird : PhysicsObject
 	public bool InSlingshot = false;
 	public float SlingshotRotation;
 
+	public virtual float SpeedModifier { get; } = 1f;
+
 	public Bird(Vector2 position)
 	{
 		Position = position;
