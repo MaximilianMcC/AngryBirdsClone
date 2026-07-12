@@ -9,14 +9,16 @@ class Slingshot : GameObject
 
 	public bool PullingBackwards = false;
 	private bool previouslyPullingBackwards = false;
+	private float maxPullbackDistance = 7f;
+	private Vector2 CradleCenter => Position + (Size * new Vector2(0.5f, 0.1f));
 
 	private float fireMultiplier = 20f;
 	private Vector2 currentImpulse;
 	private Vector2 previousImpulse;
 	private Vector2 previousBirdFirePosition;
 
+
 	public Bird Bird;
-	public bool Active;
 
 	public Slingshot(Vector2 position)
 	{
@@ -39,12 +41,10 @@ class Slingshot : GameObject
 
 	private Vector2 CalculatePotentialImpulse()
 	{
-		Vector2 cradleCenter = Position + (Size * new Vector2(0.5f, 0.1f));
-
 		// Get the direction and power in which to shoot
 		// TODO: Check for zero
-		Vector2 direction = Vector2.Normalize(cradleCenter - Level.MousePosition);
-		float firePower = Vector2.Distance(Level.MousePosition, cradleCenter) * fireMultiplier;
+		Vector2 direction = Vector2.Normalize(CradleCenter - Level.MousePosition);
+		float firePower = Vector2.Distance(Level.MousePosition, CradleCenter) * fireMultiplier;
 
 		Vector2 impulse = direction * firePower;
 		return impulse;
@@ -59,12 +59,25 @@ class Slingshot : GameObject
 		// then make it follow the cursor
 		if (PullingBackwards)
 		{
-			// Place the bird in the slingshot
+			// Set the bird to follow our mouse
+			Vector2 birdPosition = Level.MousePosition;
+			Vector2 direction = Vector2.Normalize(CradleCenter - birdPosition);
+
+			// Limit the bird to a max pullback distance if needed
+			if (Vector2.Distance(CradleCenter, birdPosition) > maxPullbackDistance)
+			{
+				// Set the bird to the max
+				birdPosition = (CradleCenter + (-direction * maxPullbackDistance));
+			}
+
+			// Make the bird sit in the slingshot nicely
 			Vector2 birdOffset = new Vector2(0.1f, 0.8f);
-			Bird.TeleportTo(Level.MousePosition - (Bird.Size * birdOffset), false);
+			birdPosition -= (Bird.Size * birdOffset);
+
+			// Actually put the bird in the slingshot
+			Bird.TeleportTo(birdPosition, false);
 
 			// Set the slingshot rotation to make the bird rotate towards the top of the slingshot
-			Vector2 direction = Position - Bird.Position;
 			Bird.SlingshotRotation = MathF.Atan2(direction.Y, direction.X) * Raylib.RAD2DEG;
 		}
 
@@ -109,7 +122,7 @@ class Slingshot : GameObject
 		{
 			Vector2 backPost = Position + (Size * new Vector2(0.8f, 0.1f));
 			Raylib.DrawLineEx(
-				Level.MousePosition,
+				Bird.Position + (Bird.Size * new Vector2(0f, 0.8f)),
 				backPost,
 				bandThickness,
 				backBandColor
@@ -122,7 +135,7 @@ class Slingshot : GameObject
 		{
 			Vector2 frontPost = Position + (Size * new Vector2(0.18f, 0.12f));
 			Raylib.DrawLineEx(
-				Level.MousePosition,
+				Bird.Position + (Bird.Size * new Vector2(0f, 0.8f)),
 				frontPost,
 				bandThickness,
 				frontBandColor
