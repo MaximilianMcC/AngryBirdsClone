@@ -43,8 +43,8 @@ class Slingshot : GameObject
 	{
 		// Get the direction and power in which to shoot
 		// TODO: Check for zero
-		Vector2 direction = Vector2.Normalize(CradleCenter - Level.MousePosition);
-		float firePower = Vector2.Distance(Level.MousePosition, CradleCenter) * fireMultiplier;
+		Vector2 direction = Vector2.Normalize(CradleCenter - Bird.Position);
+		float firePower = Vector2.Distance(Bird.Position, CradleCenter) * fireMultiplier;
 
 		Vector2 impulse = direction * firePower;
 		return impulse;
