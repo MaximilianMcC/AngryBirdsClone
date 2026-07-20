@@ -6,13 +6,15 @@ static class Level
 {
 	public static World PhysicsWorld;
 	public static readonly float Gravity = 9.81f * 1.7f;
+	private static bool SimulatePhysics = true;
 
 	public static Camera2D Camera;
 	public static List<GameObject> GameObjects = [];
 
-	private static bool SimulatePhysics = true;
-
 	public static Vector2 MousePosition => Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), Camera);
+
+	private static double startTime;
+	public static double Time => Raylib.GetTime() - startTime;
 
 	public static void Init(LevelPrototype level)
 	{
@@ -35,12 +37,15 @@ static class Level
 		{
 			gameObject.PreSceneInit();
 		}
+
+		startTime = Raylib.GetTime();
 	}
 
 	public static void Update()
 	{
 		MoveCamera();
 
+		// TODO: Remove this (debug stuff)
 		if (Raylib.IsKeyPressed(KeyboardKey.P)) SimulatePhysics = !SimulatePhysics;
 
 		// Update the physics stuff
@@ -49,7 +54,7 @@ static class Level
 		// Update all the game objects
 		foreach (GameObject gameObject in GameObjects)
 		{
-			gameObject.Update();
+			gameObject.EngineUpdate();
 		}
 	}
 
@@ -68,6 +73,12 @@ static class Level
 		}
 
 		Raylib.EndMode2D();
+
+		// Draw all the game objects' ui
+		foreach (GameObject gameObject in GameObjects)
+		{
+			gameObject.DrawUi();
+		}
 
 		if (SimulatePhysics == false) Raylib.DrawText($"Physics sim off", 10, 10, 16, Color.White);
 	}

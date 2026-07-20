@@ -4,14 +4,23 @@ using Raylib_cs;
 abstract class GameObject
 {
 	public Vector2 Position;
-	public float Rotation;
-	public Vector2 Size = new Vector2(10);
-
+	public Vector2 PreviousPosition;
 	public Vector2 CenteredPosition => Position + (Size / 2f);
+	public Vector2 CenteredPreviousPosition => PreviousPosition + (Size / 2f);
+
+	public float Rotation;
+
+	public Vector2 Size = new Vector2(10);
 
 	protected Texture2D MainTexture;
 
 	public virtual void PreSceneInit() { }
+
+	public virtual void EngineUpdate()
+	{
+		Update();
+		PreviousPosition = Position;
+	}
 
 	public virtual void Update() { }
 	
@@ -27,6 +36,8 @@ abstract class GameObject
 			Color.White
 		);
 	}
+
+	public virtual void DrawUi() { }
 
 	/// <summary>Put the actual thing on the screen. Pretty much just calls <c>Draw()</c>.</summary>
 	public virtual void Render() => Draw();
