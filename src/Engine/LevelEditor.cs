@@ -70,7 +70,10 @@ class LevelEditor
 		string levelPath = "./assets/levels/test.lvl";
 
 		// Get everything in the game that's not a bird
-		List<GameObject> level = Level.GameObjects.Where(thing => thing is not Bird).ToList();
+		List<GameObject> level = Level.GameObjects
+			.Where(thing => thing is not Bird)
+			.Where(thing => thing is not Ground)
+			.ToList();
 
 		// Serialise all of the things in the level
 		StringBuilder serializedLevel = new StringBuilder();

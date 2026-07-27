@@ -32,6 +32,20 @@ class SteelPole : Pole
 	}
 }
 
+class GlassPole : Pole
+{
+	public GlassPole(Vector2 position, float rotation)
+	{
+		Position = position;
+		Rotation = rotation;
+		
+		Size = new Vector2(0.5f, 5f);
+		PhysicsBody = Physics.CreateRectangle(this, Size);
+
+		MainTexture = Graphics.GetRandomTexture("glass1", "glass2", "glass3");
+	}
+}
+
 class PoleFactory
 {
 	public static Pole CreatePole(PoleType type, Vector2 position, float rotation)
@@ -40,6 +54,7 @@ class PoleFactory
 		{
 			PoleType.Wooden => new WoodenPole(position, rotation),
 			PoleType.Steel => new SteelPole(position, rotation),
+			PoleType.Glass => new GlassPole(position, rotation),
 			_ => null
 		};
 	}
@@ -48,5 +63,6 @@ class PoleFactory
 public enum PoleType
 {
 	Wooden,
-	Steel
+	Steel,
+	Glass
 }
