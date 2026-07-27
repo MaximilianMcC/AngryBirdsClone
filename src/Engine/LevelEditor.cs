@@ -5,7 +5,9 @@ using Raylib_cs;
 class LevelEditor
 {
 	private static List<GameObject> spawnHistory = [];
-	
+
+	private static int selectedPoleTypeIndex = 0;
+
 	public static void Update()
 	{
 		SpawnStuff();
@@ -15,6 +17,13 @@ class LevelEditor
 
 	public static void SpawnStuff()
 	{
+		// Press space to toggle between pole types
+		if (Raylib.IsKeyPressed(KeyboardKey.Space))
+		{
+			selectedPoleTypeIndex++;
+			if (selectedPoleTypeIndex >= Enum.GetNames<PoleType>().Count()) selectedPoleTypeIndex = 0;
+		}
+
 		// Press P to spawn a pig
 		if (Raylib.IsKeyPressed(KeyboardKey.P))
 		{
@@ -24,13 +33,13 @@ class LevelEditor
 		// Press H to spawn a horizontal beam
 		if (Raylib.IsKeyPressed(KeyboardKey.H))
 		{
-			spawnHistory.Add(Level.AddToLevel(new WoodenPole(Level.MousePosition, 90f)));
+			spawnHistory.Add(Level.AddToLevel(PoleFactory.CreatePole((PoleType)selectedPoleTypeIndex, Level.MousePosition, 90f)));
 		}
 
 		// Press V to spawn a vertical beam
 		if (Raylib.IsKeyPressed(KeyboardKey.V))
 		{
-			spawnHistory.Add(Level.AddToLevel(new WoodenPole(Level.MousePosition, 0f)));
+			spawnHistory.Add(Level.AddToLevel(PoleFactory.CreatePole((PoleType)selectedPoleTypeIndex, Level.MousePosition, 0f)));
 		}
 	}
 
@@ -79,6 +88,11 @@ class LevelEditor
 		// Save it to a file
 		File.WriteAllText(levelPath, serializedLevel.ToString());
 		Console.WriteLine($"Written level to {levelPath}");
+	}
+
+	public static void Render()
+	{
+		Raylib.DrawText($"{(PoleType)selectedPoleTypeIndex} Selected (space to cycle)", 10, 10, 32, Color.White);
 	}
 }
 

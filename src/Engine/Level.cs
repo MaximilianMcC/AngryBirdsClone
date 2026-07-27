@@ -78,6 +78,7 @@ static class Level
 		{
 			gameObject.DrawUi();
 		}
+		LevelEditor.Render();
 
 		if (SimulatePhysics == false) Raylib.DrawText($"Physics sim off", 10, 10, 16, Color.White);
 	}
