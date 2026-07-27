@@ -13,6 +13,20 @@ class LevelEditor
 		SpawnStuff();
 		UndoStuff();
 		SerializeLevel();
+
+		// Press ctrl+e to get an empty scene
+		if ((Raylib.IsKeyPressed(KeyboardKey.E) || Raylib.IsKeyPressedRepeat(KeyboardKey.E)) && Raylib.IsKeyDown(KeyboardKey.LeftControl))
+		{
+			for (int i = Level.GameObjects.Count - 1; i >= 0 ; i--)
+			{
+				if (Level.GameObjects[i] is Slingshot) continue;
+				if (Level.GameObjects[i] is Ground) continue;
+				if (Level.GameObjects[i] == Slingshot.Bird) continue;
+
+				Level.GameObjects[i].Unload();
+				Level.GameObjects.Remove(Level.GameObjects[i]);
+			}
+		}
 	}
 
 	public static void SpawnStuff()

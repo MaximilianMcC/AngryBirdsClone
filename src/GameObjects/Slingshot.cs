@@ -21,8 +21,8 @@ class Slingshot : GameObject
 	private const float SimulationDeltaTime = 1 / 60f;
 	private const float SimulationSecondsToSimulate = 5f;
 
-	public bool InfiniteBirds = true;
-	public Bird Bird;
+	public static bool InfiniteBirds = true;
+	public static Bird Bird;
 
 	public Slingshot(Vector2 position, float rotation  = 0f)
 	{
