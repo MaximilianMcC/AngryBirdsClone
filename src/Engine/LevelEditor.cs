@@ -25,7 +25,7 @@ class LevelEditor
 		}
 
 		// If we do ctrl+z then remove the last thing added
-		if ((Raylib.IsKeyPressed(KeyboardKey.Z) && Raylib.IsKeyPressedRepeat(KeyboardKey.Z)) && Raylib.IsKeyDown(KeyboardKey.LeftControl))
+		if ((Raylib.IsKeyPressed(KeyboardKey.Z) || Raylib.IsKeyPressedRepeat(KeyboardKey.Z)) && Raylib.IsKeyDown(KeyboardKey.LeftControl))
 		{
 			// Get the last thing that we spawned
 			if (spawnHistory.Count == 0) return;
