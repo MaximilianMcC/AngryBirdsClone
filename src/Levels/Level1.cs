@@ -8,8 +8,8 @@ class Level1 : LevelPrototype
 	{
 		Spawn(new Ground());
 
-		Spawn(new Red(new Vector2(5, -8f)));
-		Spawn(new Chuck(new Vector2(0, -8f)));
+		// Spawn(new Red(new Vector2(5, -8f)));
+		// Spawn(new Chuck(new Vector2(0, -8f)));
 		Spawn(new Slingshot(new Vector2(10, -6f)));
 
 		// Spawn(new Piggy(new Vector2(31, -8f)));

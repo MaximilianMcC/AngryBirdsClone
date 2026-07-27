@@ -14,6 +14,14 @@ abstract class GameObject
 
 	protected Texture2D MainTexture;
 
+	public double Birthday { get; private set; }
+	public double Age => Birthday - Level.Time;
+
+	public GameObject()
+	{
+		Birthday = Level.Time;
+	}
+
 	public virtual void PreSceneInit() { }
 
 	public virtual void EngineUpdate()

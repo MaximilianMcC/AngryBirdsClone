@@ -33,9 +33,9 @@ static class Level
 
 		// Run all of the setup stuff
 		// TODO: Remove this
-		foreach (GameObject gameObject in GameObjects)
+		for (int i = GameObjects.Count - 1; i >= 0 ; i--)
 		{
-			gameObject.PreSceneInit();
+			GameObjects[i].PreSceneInit();
 		}
 
 		startTime = Raylib.GetTime();
@@ -51,9 +51,9 @@ static class Level
 		if (SimulatePhysics) PhysicsWorld.Step(Raylib.GetFrameTime(), 8, 3);
 
 		// Update all the game objects
-		foreach (GameObject gameObject in GameObjects)
+		for (int i = GameObjects.Count - 1; i >= 0 ; i--)
 		{
-			gameObject.EngineUpdate();
+			GameObjects[i].EngineUpdate();
 		}
 	}
 
@@ -112,7 +112,7 @@ static class Level
 		if (Raylib.IsKeyPressed(KeyboardKey.R)) Camera.Target = Vector2.Zero;
 
 		// Debug save camera position
-		if (Raylib.IsKeyPressed(KeyboardKey.S)) Console.WriteLine($"CAMERA: {Camera.Target} @ {Camera.Zoom}%");
+		// if (Raylib.IsKeyPressed(KeyboardKey.S)) Console.WriteLine($"CAMERA: {Camera.Target} @ {Camera.Zoom}%");
 	}
 
 	public static GameObject AddToLevel(GameObject newGameObject)
@@ -120,13 +120,4 @@ static class Level
 		GameObjects.Add(newGameObject);
 		return newGameObject;
 	}
-}
-
-abstract class LevelPrototype
-{
-	public abstract string Name { get; }
-
-	public abstract void Populate();
-
-	public static void Spawn(GameObject gameObject) => Level.GameObjects.Add(gameObject);
 }

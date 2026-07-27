@@ -61,7 +61,7 @@ class Physics
 		FixtureDef fixtureDefinition = new FixtureDef();
 		fixtureDefinition.Shape = shape;
 		fixtureDefinition.Density = density;
-		fixtureDefinition.Friction = 0.8f;
+		fixtureDefinition.Friction = 0.9f;
 
 		body.CreateFixture(fixtureDefinition);
 	}

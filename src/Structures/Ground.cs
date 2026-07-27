@@ -6,7 +6,7 @@ class Ground : PhysicsObject
 {
 	public Ground()
 	{
-		Size = new Vector2(40f, 3f);
+		Size = new Vector2(80f, 3f);
 		PhysicsBody = Physics.CreateRectangle(this, Size, BodyType.StaticBody);
 
 		MainTexture = Raylib.LoadTexture("./assets/ground.png");

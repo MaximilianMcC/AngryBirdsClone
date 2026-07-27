@@ -21,11 +21,13 @@ class Slingshot : GameObject
 	private const float SimulationDeltaTime = 1 / 60f;
 	private const float SimulationSecondsToSimulate = 5f;
 
+	public bool InfiniteBirds = true;
 	public Bird Bird;
 
-	public Slingshot(Vector2 position)
+	public Slingshot(Vector2 position, float rotation  = 0f)
 	{
 		Position = position;
+		Rotation = rotation;
 
 		Size = new Vector2(2f, 7f) * 0.9f;
 		MainTexture = Raylib.LoadTexture("./assets/slingshot.png");
@@ -39,15 +41,24 @@ class Slingshot : GameObject
 
 	public void GetNextBird()
 	{
-		// Get the bird we're working with
-		Bird = Level.GameObjects.OfType<Bird>()
-			.Where(bird => bird.HasAlreadyBeenFired == false)
-			.FirstOrDefault();
-
-		if (Bird is null)
+		if (InfiniteBirds)
 		{
-			Console.WriteLine("no more birds left");
-			return;
+			// Create a new bird
+			Bird = Level.AddToLevel(new Red(new Vector2(0))) as Bird;
+		}
+		else
+		{
+			// Not using infinite birds. Get a random bird from the scene
+			Bird = Level.GameObjects.OfType<Bird>()
+				.Where(bird => bird.HasAlreadyBeenFired == false)
+				.FirstOrDefault();
+		
+			// Ensure we've actually got a bird
+			if (Bird is null)
+			{
+				Console.WriteLine("no more birds left");
+				return;
+			}
 		}
 		
 		Bird.InSlingshot = true;
@@ -152,7 +163,10 @@ class Slingshot : GameObject
 			);
 		}
 
-		Bird?.Draw();
+		// Draw the bird only if we've got infinite birds off
+		// TODO: Rewrite this
+		if (InfiniteBirds == false) Bird?.Draw();
+		else if (PullingBackwards) Bird?.Draw();
 
 		if (PullingBackwards)
 		{
