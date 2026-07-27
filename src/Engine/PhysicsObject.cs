@@ -28,4 +28,10 @@ class PhysicsObject : GameObject
 
 		if (forcePhysicsAfterwards) SimulatePhysics = true;
 	}
+
+    public override void Unload()
+    {
+        Level.PhysicsWorld.DestroyBody(PhysicsBody);
+		base.Unload();
+    }
 }

@@ -12,9 +12,9 @@ class Level1 : LevelPrototype
 		Spawn(new Chuck(new Vector2(0, -8f)));
 		Spawn(new Slingshot(new Vector2(10, -6f)));
 
-		Spawn(new Piggy(new Vector2(31, -8f)));
-		Spawn(new WoodenPole(new Vector2(30, -5f), 0f));
-		Spawn(new WoodenPole(new Vector2(33, -5f), 0f));
-		Spawn(new WoodenPole(new Vector2(31.5f, -8f), 90f));
+		// Spawn(new Piggy(new Vector2(31, -8f)));
+		// Spawn(new WoodenPole(new Vector2(30, -5f), 0f));
+		// Spawn(new WoodenPole(new Vector2(33, -5f), 0f));
+		// Spawn(new WoodenPole(new Vector2(31.5f, -8f), 90f));
 	}
 }

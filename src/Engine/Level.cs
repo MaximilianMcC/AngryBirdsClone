@@ -45,8 +45,7 @@ static class Level
 	{
 		MoveCamera();
 
-		// TODO: Remove this (debug stuff)
-		if (Raylib.IsKeyPressed(KeyboardKey.P)) SimulatePhysics = !SimulatePhysics;
+		LevelEditor.Update();
 
 		// Update the physics stuff
 		if (SimulatePhysics) PhysicsWorld.Step(Raylib.GetFrameTime(), 8, 3);
@@ -114,6 +113,12 @@ static class Level
 
 		// Debug save camera position
 		if (Raylib.IsKeyPressed(KeyboardKey.S)) Console.WriteLine($"CAMERA: {Camera.Target} @ {Camera.Zoom}%");
+	}
+
+	public static GameObject AddToLevel(GameObject newGameObject)
+	{
+		GameObjects.Add(newGameObject);
+		return newGameObject;
 	}
 }
 
